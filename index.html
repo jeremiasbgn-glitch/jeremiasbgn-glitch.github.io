@@ -3902,12 +3902,13 @@ setTimeout(() => startDataPolling(), 5000);
       });
   };
 
-  // Contar suscriptores
+  // Contar suscriptores directamente desde OneSignal API
   window.fcmCountSubscribers = function() {
-    if (!SHEETS_URL) return Promise.resolve(0);
-    return fetch(SHEETS_URL + '?action=countTokens')
+    return fetch('https://api.onesignal.com/apps/' + ONESIGNAL_APP_ID, {
+      headers: { Authorization: 'Key os_v2_app_r7m3alttgvfxznpdg4shoz6lm6us3xltugru5efzyf5r7gawoarrxyxcl6k6tqilmbot4qpwuknjyuepmzzwzxayae527antekwxjhq' }
+    })
       .then(function(r) { return r.json(); })
-      .then(function(d) { return d.count || 0; })
+      .then(function(d) { return d.subscribers || d.messagable_players || 0; })
       .catch(function() { return 0; });
   };
 
