@@ -705,38 +705,29 @@ body::before {
 .gp-tab.tab-profile.active { background: var(--accent-blue); border-color: var(--accent-blue); color: #000; }
 
 /* ── GP ROUNDS ACCORDION ── */
-.gp-accordion-wrap { margin-top: 4px; }
-.gp-accordion-toggle {
-  display: flex; align-items: center; justify-content: space-between;
-  width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 8px; padding: 10px 14px; cursor: pointer;
-  font-family: var(--font-display); font-size: 0.7rem; font-weight: 800;
-  letter-spacing: 2px; text-transform: uppercase; color: var(--white-muted);
-  transition: all var(--transition); margin-bottom: 4px;
-  -webkit-tap-highlight-color: transparent;
+/* ── TABLA GP CAROUSEL (reutiliza gp-card, override solo lo necesario) ── */
+.tabla-carousel-wrap {
+  position: relative;
+  margin: 8px 0 4px;
 }
-.gp-accordion-toggle:hover { background: rgba(232,0,45,0.06); border-color: rgba(232,0,45,0.3); color: var(--white); }
-.gp-accordion-toggle.open { color: var(--f1-red); border-color: rgba(232,0,45,0.3); background: rgba(232,0,45,0.05); }
-.gp-accordion-arrow { font-size: 0.7rem; transition: transform 0.22s; }
-.gp-accordion-toggle.open .gp-accordion-arrow { transform: rotate(180deg); }
-.gp-accordion-count { font-family: var(--font-body); font-size: 0.72rem; font-weight: 500; color: var(--white-muted); opacity: 0.6; margin-left: 6px; }
-.gp-rounds-grid {
-  display: none; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px;
-  padding: 4px 0 8px;
+.tabla-carousel {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 4px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
-.gp-rounds-grid.open { display: grid; }
-.gp-round-btn {
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-  color: var(--white-muted); padding: 8px 10px; text-align: center;
-  font-family: var(--font-display); font-size: 0.7rem; font-weight: 800;
-  letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer;
-  border-radius: 8px; transition: all var(--transition);
-  -webkit-tap-highlight-color: transparent;
+.tabla-carousel::-webkit-scrollbar { display: none; }
+.tabla-carousel .gp-card { width: 80px; padding: 12px 6px 10px; }
+.tabla-carousel .gp-card.active {
+  background: rgba(232,0,45,0.12);
+  border-color: var(--f1-red);
+  box-shadow: 0 0 0 1px rgba(232,0,45,0.2), 0 4px 12px rgba(232,0,45,0.2);
 }
-.gp-round-btn:hover { border-color: rgba(232,0,45,0.4); color: var(--white); background: rgba(232,0,45,0.07); }
-.gp-round-btn.active { background: var(--f1-red); border-color: var(--f1-red); color: #fff; box-shadow: 0 2px 10px rgba(232,0,45,0.25); }
-.gp-round-btn-flag { font-size: 1rem; display: block; margin-bottom: 2px; }
-.gp-round-btn-label { display: block; font-size: 0.62rem; letter-spacing: 0.5px; opacity: 0.85; }
+.tabla-carousel .gp-card.active .gp-card-code { color: var(--white); }
+.tabla-carousel .gp-card.active .gp-card-round { color: rgba(232,0,45,0.7); }
 
 /* Leaderboard */
 .leaderboard-card {
@@ -1164,6 +1155,225 @@ body::before {
 .notif-send-btn:hover { box-shadow: 0 4px 16px rgba(232,0,45,0.4); transform: translateY(-1px); }
 .notif-send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .notif-subscribers { font-size: 0.72rem; color: var(--white-muted); opacity: 0.6; margin-top: 4px; }
+
+/* ============================================================ GP CAROUSEL */
+.gp-carousel-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+.gp-carousel {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 4px 10px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.gp-carousel::-webkit-scrollbar { display: none; }
+.gp-card {
+  flex-shrink: 0;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 88px;
+  padding: 16px 8px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.16s;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+.gp-card:hover { background: rgba(232,0,45,0.07); border-color: rgba(232,0,45,0.3); }
+.gp-card.selected {
+  background: rgba(232,0,45,0.12);
+  border-color: var(--f1-red);
+  box-shadow: 0 0 0 1px rgba(232,0,45,0.2), 0 4px 12px rgba(232,0,45,0.2);
+}
+.gp-card.next-gp {
+  background: rgba(232,0,45,0.08);
+  border-color: rgba(232,0,45,0.5);
+  box-shadow: 0 0 0 1px rgba(232,0,45,0.15), 0 0 16px rgba(232,0,45,0.15);
+}
+.gp-card.next-gp .gp-card-code { color: var(--white); }
+.gp-card.next-gp .gp-card-round { color: rgba(232,0,45,0.6); }
+.gp-card-next-label {
+  position: absolute;
+  top: -10px; left: 50%; transform: translateX(-50%);
+  background: var(--f1-red);
+  color: white;
+  font-family: var(--font-display);
+  font-size: 0.55rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.gp-card.locked {
+  opacity: 0.45;
+  cursor: pointer;
+}
+.gp-card.cancelled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+.gp-card.cancelled:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.08);
+}
+.gp-card-flag { font-size: 2.2rem; line-height: 1; }
+.gp-card-code {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--white-muted);
+  text-align: center;
+  line-height: 1.1;
+}
+.gp-card.selected .gp-card-code { color: var(--white); }
+.gp-card-round {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.5px;
+}
+.gp-card.selected .gp-card-round { color: rgba(232,0,45,0.7); }
+.gp-card-sprint {
+  position: absolute;
+  top: 5px; right: 6px;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+/* Fade laterales para indicar scroll */
+.gp-carousel-wrap::before,
+.gp-carousel-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 8px;
+  width: 32px;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.gp-carousel-wrap::before {
+  left: 0;
+  background: linear-gradient(to right, var(--black-3) 30%, transparent);
+  opacity: 0; /* empieza oculto, se activa con JS cuando hay scroll */
+}
+.gp-carousel-wrap::after {
+  right: 0;
+  background: linear-gradient(to left, var(--black-3) 30%, transparent);
+}
+.gp-carousel-wrap.has-past::before { opacity: 1; }
+
+/* Flecha indicadora izquierda */
+.gp-scroll-hint-left-wrap {
+  position: absolute;
+  left: 0; top: 0; bottom: 8px;
+  width: 52px;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 5px;
+}
+.gp-carousel-wrap.has-past .gp-scroll-hint-left-wrap { opacity: 1; }
+.gp-past-hint-text {
+  font-family: var(--font-display);
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  line-height: 1;
+}
+
+/* ── VERSION BADGE ── */
+.version-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 3px 10px 3px 7px;
+  font-family: var(--font-display);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.version-badge:hover { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.15); }
+.version-badge-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--f1-red); opacity: 0.8; flex-shrink: 0;
+}
+
+/* ── CHANGELOG MODAL ── */
+.changelog-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  z-index: 1000; display: flex; align-items: flex-end; justify-content: center;
+  padding: 0; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.changelog-backdrop.open { opacity: 1; pointer-events: all; }
+.changelog-sheet {
+  width: 100%; max-width: 480px;
+  background: #13131d;
+  border-radius: 20px 20px 0 0;
+  border-top: 2px solid rgba(232,0,45,0.4);
+  padding: 20px 20px 40px;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.changelog-backdrop.open .changelog-sheet { transform: translateY(0); }
+.changelog-handle {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: rgba(255,255,255,0.15); margin: 0 auto 16px;
+}
+.changelog-title {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 900;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--white);
+  display: flex; align-items: center; gap: 10px; margin-bottom: 4px;
+}
+.changelog-version-tag {
+  font-size: 0.62rem; font-weight: 800; letter-spacing: 1.5px;
+  background: rgba(232,0,45,0.15); border: 1px solid rgba(232,0,45,0.3);
+  color: var(--f1-red); border-radius: 4px; padding: 2px 8px;
+}
+.changelog-date {
+  font-size: 0.72rem; color: rgba(255,255,255,0.3); margin-bottom: 16px; letter-spacing: 0.5px;
+}
+.changelog-item {
+  display: flex; gap: 10px; padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.changelog-item:last-child { border-bottom: none; }
+.changelog-item-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.changelog-item-text { font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.4; }
+.changelog-item-text strong { color: var(--white); font-weight: 600; }
 </style>
 
 <script>
@@ -1247,7 +1457,8 @@ body::before {
       <div class="logo-text-block">
         <span class="logo-main">F1 PRODE</span>
         <span class="logo-season">TEMPORADA 2026</span>
-      </div>
+      
+          <button class="version-badge" onclick="openChangelog()"><span class="version-badge-dot"></span>v1.12</button></div>
     </div>
     <!-- Admin trigger oculto: solo visible con ?admin=1 en la URL -->
     <span id="admin-entry-hint" onclick="showView('admin')" title="Admin">⚙</span>
@@ -1258,7 +1469,7 @@ body::before {
 <div class="race-banner" id="race-banner">
   <div class="race-banner-content">
     <div class="race-round-badge">RONDA <span id="banner-round">—</span></div>
-    <div class="race-banner-name" id="banner-name">Cargando GP...</div>
+    <div class="race-banner-name" id="banner-name">Seleccioná un Gran Premio</div>
     <div class="race-banner-meta">
       <span id="banner-flag">🏴</span>
       <span id="banner-circuit" style="color:rgba(255,255,255,0.45);font-size:0.9rem;margin:0 4px;"></span>
@@ -1304,18 +1515,25 @@ body::before {
 
       <div class="card" id="form-card">
         <div class="card-header">
-          <div class="card-title">TU PRONÓSTICO</div>
-          <div class="card-subtitle">Completá todos los campos y enviá antes de la qualy</div>
+          <div class="card-title" id="pronostico-card-title">TU PRONÓSTICO</div>
+          <div class="card-subtitle" id="pronostico-card-subtitle">Completá todos los campos y enviá antes de la qualy</div>
         </div>
 
         <form id="prediction-form" novalidate>
 
-          <!-- Selector de GP visible para el jugador -->
+          <!-- Selector de GP — carrusel visual -->
           <div class="form-field" style="margin-bottom:12px;">
             <label class="field-label required">🏎 GRAN PREMIO</label>
-            <select id="f-gp" class="gp-select" onchange="onGPSelectChange()">
+            <!-- select oculto para mantener compatibilidad con el resto del código -->
+            <select id="f-gp" style="display:none;" onchange="onGPSelectChange()">
               <option value="">— Seleccioná el GP —</option>
             </select>
+            <div class="gp-carousel-wrap" id="gp-carousel-wrap">
+              <div class="gp-scroll-hint-left-wrap" id="gp-past-hint">
+                <span class="gp-past-hint-text">← Anteriores</span>
+              </div>
+              <div class="gp-carousel" id="gp-carousel"></div>
+            </div>
           </div>
 
           <!-- Panel de horarios inline — se muestra al seleccionar GP -->
@@ -1417,7 +1635,7 @@ body::before {
             </div>
           </div><!-- /form-fields-wrap -->
 
-          <button type="submit" id="submit-btn" class="btn btn-primary btn-full">
+          <button type="submit" id="submit-btn" class="btn btn-primary btn-full" disabled style="opacity:0.4;cursor:not-allowed;">
             <span class="btn-flag">🏁</span>
             ENVIAR PRONÓSTICO
           </button>
@@ -2242,7 +2460,7 @@ function updateBanner(gpId) {
   var el = id => document.getElementById(id);
   if (!race) {
     if (el('banner-round'))   el('banner-round').textContent = '—';
-    if (el('banner-name'))    el('banner-name').textContent  = 'F1 Prode 2026';
+    if (el('banner-name'))    el('banner-name').textContent  = 'Seleccioná un Gran Premio';
     if (el('banner-flag'))    el('banner-flag').textContent  = '🏁';
     if (el('banner-circuit')) el('banner-circuit').textContent = '';
     if (el('banner-date'))    el('banner-date').textContent  = '';
@@ -2266,6 +2484,296 @@ function driverOptions(sel) {
 function teamOptions(sel = '') {
   return TEAMS_2026.map(t => `<option value="${t}"${t === sel ? ' selected' : ''}>${t}</option>`).join('');
 }
+
+var GP_CANCELLED = ['bhr26', 'sau26'];
+
+function buildGPCarousel() {
+  var carousel = document.getElementById('gp-carousel');
+  var select   = document.getElementById('f-gp');
+  if (!carousel || !select) return;
+  var now = Date.now();
+
+  var GP_CODE_MAP = {
+    'AUSTRALIA': 'AUS', 'CHINA': 'CHN', 'JAPÓN': 'JPN', 'BARÉIN': 'BHR',
+    'ARABIA SAUDITA': 'SAU', 'MIAMI': 'MIA', 'CANADÁ': 'CAN', 'MÓNACO': 'MON',
+    'ESPAÑA': 'ESP', 'AUSTRIA': 'AUT', 'GRAN BRETAÑA': 'GBR', 'BÉLGICA': 'BEL',
+    'HUNGRÍA': 'HUN', 'PAÍSES BAJOS': 'NED', 'ITALIA': 'ITA', 'MADRID': 'MAD',
+    'AZERBAIYÁN': 'AZE', 'SINGAPUR': 'SGP', 'EE.UU.': 'USA', 'MÉXICO': 'MEX',
+    'BRASIL': 'BRA', 'LAS VEGAS': 'LAS', 'CATAR': 'QAT', 'ABU DABI': 'ABU'
+  };
+
+  function gpCode(race) {
+    return GP_CODE_MAP[race.short.toUpperCase()] || race.short.substring(0, 3).toUpperCase();
+  }
+
+  var nextGPIndex = -1;
+
+  carousel.innerHTML = RACES_2026.map(function(race, idx) {
+    var cancelled = GP_CANCELLED.indexOf(race.id) !== -1;
+    var closingTime = race.sprintQualy || race.qualy;
+    var past = closingTime && (now - new Date(closingTime).getTime()) > 7200000;
+    var locked = past || cancelled;
+
+    var isNext = (!past && !cancelled && nextGPIndex === -1);
+    // Primer GP no pasado y no cancelado = próximo
+    if (isNext) nextGPIndex = idx;
+
+    var classes = 'gp-card';
+    if (locked) classes += ' locked';
+    if (cancelled) classes += ' cancelled';
+    if (isNext) classes += ' next-gp';
+
+    var topBadge = '';
+    if (cancelled) topBadge = '<span class="gp-card-sprint" title="Suspendido">🚫</span>';
+    else if (isNext) topBadge = '<span class="gp-card-next-label">PRÓXIMO</span>';
+    else if (race.sprint) topBadge = '<span class="gp-card-sprint">⚡</span>';
+
+    return '<div class="' + classes + '" data-id="' + race.id + '" data-past="' + (past && !cancelled ? 'true' : 'false') + '" onclick="selectGPCard(this)">' +
+      topBadge +
+      '<span class="gp-card-flag">' + race.flag + '</span>' +
+      '<span class="gp-card-code">' + gpCode(race) + '</span>' +
+      '<span class="gp-card-round">R' + race.round + '</span>' +
+    '</div>';
+  }).join('');
+
+  // Scroll al próximo GP después de renderizar
+  if (nextGPIndex !== -1) {
+    setTimeout(function() {
+      var cards = carousel.querySelectorAll('.gp-card');
+      var wrap = document.getElementById('gp-carousel-wrap');
+
+      if (cards[nextGPIndex]) {
+        // Calcular offset para dejar los GPs pasados apenas visibles a la izquierda
+        var card = cards[nextGPIndex];
+        var cardLeft = card.offsetLeft;
+        // Mostrar ~half de la tarjeta anterior para hint visual
+        var peekWidth = nextGPIndex > 0 ? 40 : 0;
+        carousel.scrollLeft = Math.max(0, cardLeft - peekWidth);
+
+        // Activar indicador izquierdo si hay GPs pasados
+        if (wrap && nextGPIndex > 0) {
+          wrap.classList.add('has-past');
+        }
+      }
+
+      // Listener de scroll para ocultar/mostrar el fade izquierdo
+      carousel.addEventListener('scroll', function() {
+        if (wrap) {
+          wrap.classList.toggle('has-past', carousel.scrollLeft > 10);
+        }
+      }, { passive: true });
+
+    }, 80);
+  }
+}
+
+function selectGPCard(el) {
+  // Cancelados: no hacer nada
+  if (el.classList.contains('cancelled')) return;
+
+  var gpId = el.dataset.id;
+  var isPast = el.dataset.past === 'true';
+
+  // Deseleccionar todos
+  document.querySelectorAll('.gp-card').forEach(function(c) { c.classList.remove('selected'); });
+  el.classList.add('selected');
+
+  // Scroll suave al elemento
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
+  // GP pasado con resultados: mostrar panel de resultados oficiales
+  if (isPast) {
+    showPastGPResults(gpId);
+    return;
+  }
+
+  // GP próximo: comportamiento normal del formulario
+  var select = document.getElementById('f-gp');
+  if (select) {
+    var exists = Array.from(select.options).some(function(o) { return o.value === gpId; });
+    if (!exists) {
+      var opt = document.createElement('option');
+      opt.value = gpId; opt.textContent = gpId;
+      select.appendChild(opt);
+    }
+    select.value = gpId;
+    onGPSelectChange();
+  }
+}
+
+function showPastGPResults(gpId) {
+  if (!gpId) return;
+  var result = appState.results && appState.results[gpId];
+  var race   = RACES_2026.find(function(r) { return r.id === gpId; });
+  var form   = document.getElementById('prediction-form');
+  var fields = document.getElementById('form-fields-wrap');
+  var locked = document.getElementById('form-locked-banner');
+
+  // Sincronizar carrusel — el carrusel queda siempre visible
+  var carousel = document.getElementById('gp-carousel');
+  var targetCard = null;
+  if (carousel) {
+    carousel.querySelectorAll('.gp-card').forEach(function(c) {
+      var isTarget = c.dataset.id === gpId;
+      c.classList.toggle('selected', isTarget);
+      if (isTarget) targetCard = c;
+    });
+    // Scroll suave al GP seleccionado
+    if (targetCard) {
+      setTimeout(function() {
+        var cardLeft = targetCard.offsetLeft;
+        var peekWidth = 40;
+        carousel.scrollTo({ left: Math.max(0, cardLeft - peekWidth), behavior: 'smooth' });
+        // Actualizar indicador de scroll izquierdo
+        var wrap = document.getElementById('gp-carousel-wrap');
+        if (wrap) wrap.classList.toggle('has-past', carousel.scrollLeft > 10);
+      }, 50);
+    }
+  }
+
+  // Cambiar título del card
+  var titleEl = document.getElementById('pronostico-card-title');
+  var subEl   = document.getElementById('pronostico-card-subtitle');
+  if (titleEl) titleEl.textContent = (race ? race.flag + ' ' : '') + (race ? race.short.toUpperCase() : 'GP');
+  if (subEl)   subEl.textContent = 'Resultados oficiales del Gran Premio';
+
+  // Ocultar solo los campos del form, no el carrusel
+  if (fields) fields.style.display = 'none';
+  if (locked) locked.style.display = 'none';
+
+  // Actualizar banner
+  updateBanner(gpId);
+  renderCircuitStats(gpId);
+  renderHorariosInline(null);
+  startCountdown(null);
+
+  // Insertar panel de resultados DENTRO del form (después del carrusel)
+  var el = document.getElementById('past-results-panel');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'past-results-panel';
+    el.style.cssText = 'margin:0;';
+    // Insertar después del div del carrusel, antes del form
+    var carouselField = form.querySelector('.form-field');
+    if (carouselField) {
+      carouselField.parentNode.insertBefore(el, carouselField.nextSibling);
+    } else {
+      form.insertBefore(el, form.firstChild);
+    }
+  }
+
+  // Ocultar el submit y los campos pero mostrar el form (que contiene el carrusel)
+  form.style.display = 'block';
+  var submitBtn = document.getElementById('submit-btn');
+  if (submitBtn) submitBtn.style.display = 'none';
+
+  if (!result) {
+    el.innerHTML = '<div style="text-align:center;padding:32px 16px;color:rgba(255,255,255,0.35);font-size:0.85rem;">Sin resultados cargados para este GP</div>';
+    el.style.display = 'block';
+    return;
+  }
+
+  var fields_map = [
+    { key: 'pole',       label: 'Pole Position',    icon: '⚡' },
+    { key: 'winner',     label: 'Ganador',           icon: '🏆' },
+    { key: 'p1',         label: '1er Lugar',         icon: '🥇' },
+    { key: 'p2',         label: '2do Lugar',         icon: '🥈' },
+    { key: 'p3',         label: '3er Lugar',         icon: '🥉' },
+    { key: 'fastestLap', label: 'Vuelta Rápida',     icon: '⏱' },
+    { key: 'dotd',       label: 'Driver of the Day', icon: '⭐' },
+    { key: 'pitStop',    label: 'Mejor Pit Stop',    icon: '🔧' },
+    { key: 'dnf',        label: 'DNFs',              icon: '🚩' },
+  ];
+  if (race && race.sprint) {
+    fields_map.push({ key: 'sprintPole',   label: 'Pole Sprint',    icon: '⚡' });
+    fields_map.push({ key: 'sprintWinner', label: 'Ganador Sprint', icon: '🏁' });
+  }
+
+  var rows = fields_map.filter(function(f) { return result[f.key]; }).map(function(f) {
+    return '<div style="display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,0.05);">' +
+      '<span style="font-size:1rem;width:22px;text-align:center;flex-shrink:0;">' + f.icon + '</span>' +
+      '<span style="font-size:0.8rem;color:rgba(255,255,255,0.45);flex:1;font-family:var(--font-display);font-size:0.68rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;">' + f.label + '</span>' +
+      '<span style="font-size:0.88rem;font-weight:600;color:var(--white);">' + result[f.key] + '</span>' +
+    '</div>';
+  }).join('');
+
+  // Barra de navegación entre GPs pasados
+  var pastRaces = RACES_2026.filter(function(r) {
+    var ct = r.sprintQualy || r.qualy;
+    var isPast = ct && (Date.now() - new Date(ct).getTime()) > 7200000;
+    return isPast && GP_CANCELLED.indexOf(r.id) === -1;
+  });
+  var currentIdx = pastRaces.findIndex(function(r) { return r.id === gpId; });
+  var prevRace = currentIdx > 0 ? pastRaces[currentIdx - 1] : null;
+  var nextRace = currentIdx < pastRaces.length - 1 ? pastRaces[currentIdx + 1] : null;
+
+  var prevId = prevRace ? prevRace.id : '';
+  var nextId = nextRace ? nextRace.id : '';
+  var prevLabel = prevRace ? ('← ' + prevRace.flag + ' ' + prevRace.short) : '←';
+  var nextLabel = nextRace ? (nextRace.flag + ' ' + nextRace.short + ' →') : '→';
+
+  var navBar = '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">' +
+    '<button ' + (prevRace ? 'data-gpid="' + prevId + '" onclick="showPastGPResults(this.dataset.gpid)"' : 'disabled') + ' ' +
+      'style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px;color:' + (prevRace ? 'var(--white)' : 'rgba(255,255,255,0.2)') + ';font-size:0.75rem;cursor:' + (prevRace ? 'pointer' : 'default') + ';-webkit-tap-highlight-color:transparent;">' +
+      prevLabel +
+    '</button>' +
+    '<button onclick="showNextGPForm()" style="background:rgba(232,0,45,0.1);border:1px solid rgba(232,0,45,0.3);border-radius:8px;padding:8px 12px;color:var(--f1-red);font-family:var(--font-display);font-size:0.62rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;cursor:pointer;-webkit-tap-highlight-color:transparent;">🏁 Pronosticar</button>' +
+    '<button ' + (nextRace ? 'data-gpid="' + nextId + '" onclick="showPastGPResults(this.dataset.gpid)"' : 'disabled') + ' ' +
+      'style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:8px;color:' + (nextRace ? 'var(--white)' : 'rgba(255,255,255,0.2)') + ';font-size:0.75rem;cursor:' + (nextRace ? 'pointer' : 'default') + ';text-align:right;-webkit-tap-highlight-color:transparent;">' +
+      nextLabel +
+    '</button>' +
+  '</div>';
+
+  el.innerHTML = navBar +
+    '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden;margin:0 0 12px;">' +
+    '<div style="padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:8px;">' +
+      '<span style="font-size:1.1rem;">' + (race ? race.flag : '🏁') + '</span>' +
+      '<span style="font-family:var(--font-display);font-size:0.72rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--white);">Resultados Oficiales</span>' +
+      '<span style="font-family:var(--font-display);font-size:0.6rem;font-weight:800;letter-spacing:1px;background:rgba(0,230,100,0.12);border:1px solid rgba(0,230,100,0.25);color:var(--green);border-radius:4px;padding:2px 7px;margin-left:auto;">FINAL</span>' +
+    '</div>' +
+    rows +
+  '</div>';
+
+  el.style.display = 'block';
+}
+
+// Preseleccionar una tarjeta desde código (usado por activeGP)
+function preselectGPCard(gpId) {
+  var card = document.querySelector('.gp-card[data-id="' + gpId + '"]');
+  if (card && !card.classList.contains('locked')) {
+    selectGPCard(card);
+  }
+}
+
+// Changelog
+function openChangelog() {
+  var bd = document.getElementById('changelog-backdrop');
+  if (bd) bd.classList.add('open');
+}
+function closeChangelog(e) {
+  if (e && e.target !== document.getElementById('changelog-backdrop')) return;
+  var bd = document.getElementById('changelog-backdrop');
+  if (bd) bd.classList.remove('open');
+}
+window.openChangelog = openChangelog;
+window.closeChangelog = closeChangelog;
+window.selectGPCard = selectGPCard;
+window.showPastGPResults = showPastGPResults;
+window.showNextGPForm = function() {
+  // Seleccionar el próximo GP en el carrusel
+  var nextCard = document.querySelector('.gp-card.next-gp');
+  if (nextCard) {
+    selectGPCard(nextCard);
+  } else {
+    // Fallback: ocultar panel y mostrar form
+    var pastPanel = document.getElementById('past-results-panel');
+    var form = document.getElementById('prediction-form');
+    if (pastPanel) pastPanel.style.display = 'none';
+    if (form) form.style.display = 'block';
+  }
+};
+window.preselectGPCard = preselectGPCard;
+window.buildGPCarousel = buildGPCarousel;
 
 function populateGPSelect(id, sel) {
   sel = sel || '';
@@ -2312,6 +2820,8 @@ function populateFormSelects() {
   if (rdnf) rdnf.innerHTML = `<option value="">—</option><option value="${NO_DNF_OPTION}">${NO_DNF_OPTION}</option>` + driverOptions();
   // Poblar el selector de GP del formulario con todas las carreras
   populateGPSelect('f-gp', '');
+  // Construir el carrusel visual
+  buildGPCarousel();
   updateSprintFields();
 }
 
@@ -2319,6 +2829,33 @@ function populateFormSelects() {
 // Llamada cada vez que el jugador cambia el GP en el selector
 function onGPSelectChange() {
   var gpId = document.getElementById('f-gp').value;
+  // Sincronizar carrusel visual
+  document.querySelectorAll('.gp-card').forEach(function(c) {
+    c.classList.toggle('selected', c.dataset.id === gpId);
+  });
+
+  // Ocultar panel de resultados pasados si estaba visible
+  var pastPanel = document.getElementById('past-results-panel');
+  var form = document.getElementById('prediction-form');
+  if (pastPanel) pastPanel.style.display = 'none';
+  if (form) form.style.display = 'block';
+  // Restaurar título original
+  var titleEl = document.getElementById('pronostico-card-title');
+  var subEl   = document.getElementById('pronostico-card-subtitle');
+  if (titleEl) titleEl.textContent = 'TU PRONÓSTICO';
+  if (subEl)   subEl.textContent = 'Completá todos los campos y enviá antes de la qualy';
+  // Habilitar/mostrar el botón de envío
+  var submitBtn = document.getElementById('submit-btn');
+  if (submitBtn && gpId) {
+    submitBtn.disabled = false;
+    submitBtn.style.opacity = '';
+    submitBtn.style.cursor = '';
+    submitBtn.style.display = '';
+  }
+  // Ocultar panel de resultados pasados
+  var pastPanel = document.getElementById('past-results-panel');
+  if (pastPanel) pastPanel.style.display = 'none';
+
   var fields = document.getElementById('form-fields-wrap');
 
   // 1. Limpiar todo el estado anterior del formulario
@@ -2944,83 +3481,101 @@ function _fmtCountdown(ms) {
   return parts.join(' ');
 }
 
+var GP_CODE_MAP_TABLA = {
+  'AUSTRALIA': 'AUS', 'CHINA': 'CHN', 'JAPÓN': 'JPN', 'BARÉIN': 'BHR',
+  'ARABIA SAUDITA': 'SAU', 'MIAMI': 'MIA', 'CANADÁ': 'CAN', 'MÓNACO': 'MON',
+  'ESPAÑA': 'ESP', 'AUSTRIA': 'AUT', 'GRAN BRETAÑA': 'GBR', 'BÉLGICA': 'BEL',
+  'HUNGRÍA': 'HUN', 'PAÍSES BAJOS': 'NED', 'ITALIA': 'ITA', 'MADRID': 'MAD',
+  'AZERBAIYÁN': 'AZE', 'SINGAPUR': 'SGP', 'EE.UU.': 'USA', 'MÉXICO': 'MEX',
+  'BRASIL': 'BRA', 'LAS VEGAS': 'LAS', 'CATAR': 'QAT', 'ABU DABI': 'ABU'
+};
+
 function renderTablas() {
   var scored = RACES_2026.filter(function(r) { return appState.results[r.id]; });
+  var cont = document.getElementById('gp-tabs');
+
+  // Tabs principales (General + Evolución)
   var mainTabs = [
     { id:'general',   label:'GENERAL' },
     { id:'evolucion', label:'📈 EVOLUCIÓN' },
   ];
-  var cont = document.getElementById('gp-tabs');
-
-  // Renderizar tabs principales
-  var tabsHtml = mainTabs.map(function(t) {
+  cont.innerHTML = mainTabs.map(function(t) {
     return '<button class="gp-tab' + (t.id === 'general' ? ' active' : '') + '" data-tab="' + t.id + '">' + t.label + '</button>';
   }).join('');
-
-  // Accordion de GPs por ronda
-  var accordionHtml = '';
-  if (scored.length > 0) {
-    accordionHtml = '<div class="gp-accordion-wrap">' +
-      '<button class="gp-accordion-toggle" id="gp-accordion-btn" onclick="toggleGPAccordion()">' +
-        '<span>📊 RESULTADOS POR GP <span class="gp-accordion-count">(' + scored.length + ' disputado' + (scored.length !== 1 ? 's' : '') + ')</span></span>' +
-        '<span class="gp-accordion-arrow">▼</span>' +
-      '</button>' +
-      '<div class="gp-rounds-grid" id="gp-rounds-grid">' +
-        scored.map(function(r) {
-          return '<button class="gp-round-btn" data-tab="' + r.id + '" onclick="selectGPRound(this)">' +
-            '<span class="gp-round-btn-flag">' + r.flag + '</span>' +
-            '<span class="gp-round-btn-label">R' + r.round + ' ' + r.short + '</span>' +
-          '</button>';
-        }).join('') +
-      '</div>' +
-    '</div>';
-  }
-
-  cont.innerHTML = tabsHtml;
-  // Insertar accordion DESPUÉS del wrapper de tabs
-  var wrapper = cont.closest('.gp-tabs-wrapper');
-  var existingAccordion = document.getElementById('gp-accordion-container');
-  if (existingAccordion) existingAccordion.remove();
-  var accordionContainer = document.createElement('div');
-  accordionContainer.id = 'gp-accordion-container';
-  accordionContainer.innerHTML = accordionHtml;
-  wrapper.parentNode.insertBefore(accordionContainer, wrapper.nextSibling);
 
   cont.querySelectorAll('.gp-tab').forEach(function(btn) {
     btn.addEventListener('click', function() {
       cont.querySelectorAll('.gp-tab').forEach(function(b) { b.classList.remove('active'); });
-      // Desactivar round buttons
-      var grid = document.getElementById('gp-rounds-grid');
-      if (grid) grid.querySelectorAll('.gp-round-btn').forEach(function(b) { b.classList.remove('active'); });
+      // Desactivar carrusel
+      var tc = document.getElementById('tabla-carousel');
+      if (tc) tc.querySelectorAll('.gp-card').forEach(function(c) { c.classList.remove('active'); });
       btn.classList.add('active');
       renderTable(btn.dataset.tab);
     });
   });
+
+  // Carrusel de GPs disputados
+  var wrapper = cont.closest('.gp-tabs-wrapper');
+  var existingCarousel = document.getElementById('tabla-carousel-container');
+  if (existingCarousel) existingCarousel.remove();
+
+  // Siempre mostrar el carrusel (GPs puntuados + próximos en gris)
+  var now = Date.now();
+  // GPs próximos no cancelados y no pasados
+  var upcomingRaces = RACES_2026.filter(function(r) {
+    var ct = r.sprintQualy || r.qualy;
+    var past = ct && (now - new Date(ct).getTime()) > 7200000;
+    return !past && GP_CANCELLED.indexOf(r.id) === -1 && !appState.results[r.id];
+  }).slice(0, 4); // Solo los próximos 4
+
+  // Ordenar puntuados: el más reciente primero
+  var scoredOrdered = scored.slice().reverse();
+
+  var carouselContainer = document.createElement('div');
+  carouselContainer.id = 'tabla-carousel-container';
+
+  var allCards = scoredOrdered.map(function(r) {
+    var code = GP_CODE_MAP_TABLA[r.short.toUpperCase()] || r.short.substring(0, 3).toUpperCase();
+    var sprint = r.sprint ? '<span class="gp-card-sprint">⚡</span>' : '';
+    return '<div class="gp-card" data-tab="' + r.id + '" onclick="selectTablaGP(this)">' +
+      sprint +
+      '<span class="gp-card-flag">' + r.flag + '</span>' +
+      '<span class="gp-card-code">' + code + '</span>' +
+      '<span class="gp-card-round">R' + r.round + '</span>' +
+    '</div>';
+  }).join('');
+
+  var upcomingCards = upcomingRaces.map(function(r) {
+    var code = GP_CODE_MAP_TABLA[r.short.toUpperCase()] || r.short.substring(0, 3).toUpperCase();
+    return '<div class="gp-card tabla-upcoming" style="opacity:0.3;cursor:default;" title="Próximamente">' +
+      '<span class="gp-card-flag">' + r.flag + '</span>' +
+      '<span class="gp-card-code">' + code + '</span>' +
+      '<span class="gp-card-round">R' + r.round + '</span>' +
+    '</div>';
+  }).join('');
+
+  carouselContainer.innerHTML =
+    '<div style="font-family:var(--font-display);font-size:0.62rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);padding:4px 2px 2px;">Resultados por GP</div>' +
+    '<div class="tabla-carousel-wrap">' +
+      '<div class="tabla-carousel" id="tabla-carousel">' +
+        allCards + upcomingCards +
+      '</div>' +
+    '</div>';
+
+  wrapper.parentNode.insertBefore(carouselContainer, wrapper.nextSibling);
+
   renderTable('general');
 }
 
-function toggleGPAccordion() {
-  var btn = document.getElementById('gp-accordion-btn');
-  var grid = document.getElementById('gp-rounds-grid');
-  if (!btn || !grid) return;
-  var isOpen = grid.classList.contains('open');
-  if (isOpen) {
-    grid.classList.remove('open');
-    btn.classList.remove('open');
-  } else {
-    grid.classList.add('open');
-    btn.classList.add('open');
-  }
-}
-
-function selectGPRound(el) {
+function selectTablaGP(el) {
   // Desactivar tabs principales
   var cont = document.getElementById('gp-tabs');
   cont.querySelectorAll('.gp-tab').forEach(function(b) { b.classList.remove('active'); });
-  // Desactivar otros round buttons
-  var grid = document.getElementById('gp-rounds-grid');
-  grid.querySelectorAll('.gp-round-btn').forEach(function(b) { b.classList.remove('active'); });
+  // Marcar activo en carrusel
+  var tc = document.getElementById('tabla-carousel');
+  if (tc) tc.querySelectorAll('.gp-card').forEach(function(c) { c.classList.remove('active'); });
   el.classList.add('active');
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   renderTable(el.dataset.tab);
 }
 
@@ -3902,13 +4457,12 @@ setTimeout(() => startDataPolling(), 5000);
       });
   };
 
-  // Contar suscriptores directamente desde OneSignal API
+  // Contar suscriptores
   window.fcmCountSubscribers = function() {
-    return fetch('https://api.onesignal.com/apps/' + ONESIGNAL_APP_ID, {
-      headers: { Authorization: 'Key os_v2_app_r7m3alttgvfxznpdg4shoz6lm6us3xltugru5efzyf5r7gawoarrxyxcl6k6tqilmbot4qpwuknjyuepmzzwzxayae527antekwxjhq' }
-    })
+    if (!SHEETS_URL) return Promise.resolve(0);
+    return fetch(SHEETS_URL + '?action=countTokens')
       .then(function(r) { return r.json(); })
-      .then(function(d) { return d.subscribers || d.messagable_players || 0; })
+      .then(function(d) { return d.count || 0; })
       .catch(function() { return 0; });
   };
 
@@ -3954,5 +4508,38 @@ setTimeout(() => startDataPolling(), 5000);
     });
   });
 </script>
+
+<!-- ── CHANGELOG MODAL ── -->
+<div class="changelog-backdrop" id="changelog-backdrop" onclick="closeChangelog(event)">
+  <div class="changelog-sheet">
+    <div class="changelog-handle"></div>
+    <div class="changelog-title">
+      Novedades
+      <span class="changelog-version-tag">v1.12</span>
+    </div>
+    <div class="changelog-date">Mayo 2026</div>
+    <div class="changelog-item">
+      <span class="changelog-item-icon">🏎</span>
+      <div class="changelog-item-text"><strong>Selector de GP visual</strong> — Las carreras ahora se eligen desde un carrusel con bandera y código de país</div>
+    </div>
+
+    <div class="changelog-item">
+      <span class="changelog-item-icon">🔍</span>
+      <div class="changelog-item-text"><strong>Autocompletado de nombre</strong> — Al escribir tu nombre se sugieren los jugadores ya registrados para evitar errores</div>
+    </div>
+    <div class="changelog-item">
+      <span class="changelog-item-icon">📋</span>
+      <div class="changelog-item-text"><strong>GPs por ronda en acordeón</strong> — Las rondas disputadas en la tabla quedan ocultas y se despliegan al pedirlas</div>
+    </div>
+    <div class="changelog-item">
+      <span class="changelog-item-icon">📈</span>
+      <div class="changelog-item-text"><strong>Estadísticas del circuito desplegables</strong> — El panel de datos del circuito ahora arranca colapsado para no ocupar espacio</div>
+    </div>
+    <div class="changelog-item">
+      <span class="changelog-item-icon">🎨</span>
+      <div class="changelog-item-text"><strong>Refresh visual</strong> — Nuevo ícono geométrico F1, mejoras en header, botones, countdown y toasts</div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
