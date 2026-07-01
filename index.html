@@ -4119,7 +4119,7 @@ function onAdminManualGPChange() {
 
   // Poblar selects de pilotos
   var driverOpts = '<option value="">— Piloto —</option>' +
-    DRIVERS_2026.map(function(d) { return '<option value="' + d + '">' + d + '</option>'; }).join('');
+    DRIVERS_2026.map(function(d) { return '<option value="' + d.name + '">' + d.flag + ' ' + d.name + '</option>'; }).join('');
 
   var teamOpts = '<option value="">— Equipo —</option>' +
     ['Mercedes','Ferrari','Red Bull','McLaren','Aston Martin','Alpine','Williams','Racing Bulls','Kick Sauber','Haas']
