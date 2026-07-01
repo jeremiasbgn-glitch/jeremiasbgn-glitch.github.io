@@ -1374,6 +1374,26 @@ body::before {
 .changelog-item-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
 .changelog-item-text { font-size: 0.85rem; color: rgba(255,255,255,0.7); line-height: 1.4; }
 .changelog-item-text strong { color: var(--white); font-weight: 600; }
+
+/* ── ADMIN MANUAL PREDICTION FORM ── */
+.admin-manual-form { margin-top: 4px; }
+.admin-manual-row {
+  display: flex; gap: 8px; margin-bottom: 8px;
+}
+.admin-manual-row .field-select,
+.admin-manual-row .field-input {
+  flex: 1; font-size: 0.82rem; padding: 9px 10px;
+}
+.admin-manual-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;
+}
+.admin-manual-grid .field-select { font-size: 0.78rem; padding: 8px 10px; }
+.admin-manual-label {
+  font-family: var(--font-display); font-size: 0.6rem; font-weight: 800;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--white-muted);
+  margin-bottom: 4px; display: block;
+}
+.admin-manual-section { margin-bottom: 12px; }
 </style>
 
 <script>
@@ -1724,6 +1744,53 @@ body::before {
         <div class="card">
           <div class="card-label">PRONÓSTICOS RECIBIDOS</div>
           <div id="admin-predictions-list"></div>
+        </div>
+
+        <!-- ── CARGA MANUAL DE PRONÓSTICO ── -->
+        <div class="card" style="padding:16px;margin-top:12px;">
+          <div class="card-label">CARGAR PRONÓSTICO MANUAL</div>
+
+          <div class="admin-manual-form" id="admin-manual-form">
+            <div class="admin-manual-row">
+              <div style="flex:1">
+                <span class="admin-manual-label">Jugador</span>
+                <input type="text" id="am-player" class="field-input" placeholder="Nombre del jugador..." autocomplete="off" style="width:100%;font-size:0.82rem;padding:9px 10px;">
+              </div>
+              <div style="flex:1">
+                <span class="admin-manual-label">Gran Premio</span>
+                <select id="am-gp" class="field-select" style="width:100%;font-size:0.82rem;padding:9px 10px;" onchange="onAdminManualGPChange()">
+                  <option value="">— GP —</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="am-fields" style="display:none;">
+              <div class="admin-manual-grid">
+                <div><span class="admin-manual-label">⚡ Pole</span><select id="am-pole" class="field-select" style="width:100%;"></select></div>
+                <div><span class="admin-manual-label">🏆 Ganador</span><select id="am-winner" class="field-select" style="width:100%;"></select></div>
+                <div><span class="admin-manual-label">🥇 P1</span><select id="am-p1" class="field-select" style="width:100%;"></select></div>
+                <div><span class="admin-manual-label">🥈 P2</span><select id="am-p2" class="field-select" style="width:100%;"></select></div>
+                <div><span class="admin-manual-label">🥉 P3</span><select id="am-p3" class="field-select" style="width:100%;"></select></div>
+                <div><span class="admin-manual-label">⏱ Vuelta Rápida</span><select id="am-fl" class="field-select" style="width:100%;"></select></div>
+                <div><span class="admin-manual-label">⭐ DOTD</span><select id="am-dotd" class="field-select" style="width:100%;"></select></div>
+                <div><span class="admin-manual-label">🔧 Pit Stop</span><select id="am-pit" class="field-select" style="width:100%;"></select></div>
+              </div>
+              <div class="admin-manual-section">
+                <span class="admin-manual-label">🚩 DNFs (separados por coma)</span>
+                <input type="text" id="am-dnf" class="field-input" placeholder="Ej: Norris, Alonso" style="width:100%;font-size:0.82rem;padding:9px 10px;">
+              </div>
+              <div id="am-sprint-fields" style="display:none;">
+                <div class="admin-manual-grid">
+                  <div><span class="admin-manual-label">⚡ Pole Sprint</span><select id="am-sprint-pole" class="field-select" style="width:100%;"></select></div>
+                  <div><span class="admin-manual-label">🏁 Ganador Sprint</span><select id="am-sprint-winner" class="field-select" style="width:100%;"></select></div>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-full" onclick="submitAdminManualPred()" style="margin-top:4px;">
+                📋 CARGAR PRONÓSTICO
+              </button>
+              <div id="am-feedback" style="font-size:0.78rem;color:var(--green);text-align:center;margin-top:8px;min-height:18px;"></div>
+            </div>
+          </div>
         </div>
 
         <!-- ── PANEL DE NOTIFICACIONES ── -->
@@ -4003,11 +4070,162 @@ function adminLogout() {
   document.getElementById('admin-password').value = '';
 }
 
+
+// ══════════════════════════════════════════════════════════════
+// ADMIN — CARGA MANUAL DE PRONÓSTICO
+// ══════════════════════════════════════════════════════════════
+
+function initAdminManualForm() {
+  // Poblar select de GP con todas las carreras (sin bloquear nada)
+  var gpSel = document.getElementById('am-gp');
+  if (!gpSel) return;
+  gpSel.innerHTML = '<option value="">— GP —</option>' +
+    RACES_2026.filter(function(r) { return GP_CANCELLED.indexOf(r.id) === -1; })
+      .map(function(r) {
+        var scored = appState.results[r.id] ? ' ✅' : '';
+        return '<option value="' + r.id + '">' + r.flag + ' R' + r.round + ' ' + r.short + scored + '</option>';
+      }).join('');
+
+  // Poblar autocomplete de jugador con jugadores conocidos
+  var playerInput = document.getElementById('am-player');
+  if (playerInput) {
+    var players = [];
+    var seen = {};
+    (appState.predictions || []).forEach(function(p) {
+      if (p.player && !seen[p.player.toLowerCase()]) {
+        seen[p.player.toLowerCase()] = true;
+        players.push(p.player);
+      }
+    });
+    // Datalist para sugerencias
+    var dl = document.getElementById('am-player-list');
+    if (!dl) {
+      dl = document.createElement('datalist');
+      dl.id = 'am-player-list';
+      playerInput.setAttribute('list', 'am-player-list');
+      playerInput.parentNode.appendChild(dl);
+    }
+    dl.innerHTML = players.map(function(p) { return '<option value="' + p + '">'; }).join('');
+  }
+}
+
+function onAdminManualGPChange() {
+  var gpId  = document.getElementById('am-gp').value;
+  var fields = document.getElementById('am-fields');
+  var sprintFields = document.getElementById('am-sprint-fields');
+  if (!fields) return;
+
+  if (!gpId) { fields.style.display = 'none'; return; }
+
+  // Poblar selects de pilotos
+  var driverOpts = '<option value="">— Piloto —</option>' +
+    DRIVERS_2026.map(function(d) { return '<option value="' + d + '">' + d + '</option>'; }).join('');
+
+  var teamOpts = '<option value="">— Equipo —</option>' +
+    ['Mercedes','Ferrari','Red Bull','McLaren','Aston Martin','Alpine','Williams','Racing Bulls','Kick Sauber','Haas']
+      .map(function(t) { return '<option value="' + t + '">' + t + '</option>'; }).join('');
+
+  ['am-pole','am-winner','am-p1','am-p2','am-p3','am-fl','am-dotd'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = driverOpts;
+  });
+  var pitEl = document.getElementById('am-pit');
+  if (pitEl) pitEl.innerHTML = teamOpts;
+
+  // Sprint fields
+  var race = RACES_2026.find(function(r) { return r.id === gpId; });
+  if (sprintFields) sprintFields.style.display = (race && race.sprint) ? 'block' : 'none';
+  if (race && race.sprint) {
+    ['am-sprint-pole','am-sprint-winner'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.innerHTML = driverOpts;
+    });
+  }
+
+  // Precargar con resultado oficial si existe (para facilitar la carga)
+  var result = appState.results[gpId];
+  if (result) {
+    var map = { 'am-pole': 'pole', 'am-winner': 'winner', 'am-p1': 'p1', 'am-p2': 'p2',
+                'am-p3': 'p3', 'am-fl': 'fastestLap', 'am-dotd': 'dotd', 'am-pit': 'pitStop',
+                'am-sprint-pole': 'sprintPole', 'am-sprint-winner': 'sprintWinner' };
+    Object.keys(map).forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && result[map[id]]) el.value = result[map[id]];
+    });
+    var dnfEl = document.getElementById('am-dnf');
+    if (dnfEl && result.dnf) dnfEl.value = result.dnf;
+  }
+
+  fields.style.display = 'block';
+  document.getElementById('am-feedback').textContent = '';
+}
+
+async function submitAdminManualPred() {
+  var player = (document.getElementById('am-player').value || '').trim();
+  var gpId   = document.getElementById('am-gp').value;
+  var fb     = document.getElementById('am-feedback');
+
+  if (!player) { fb.style.color = 'var(--f1-red)'; fb.textContent = '⚠️ Ingresá el nombre del jugador'; return; }
+  if (!gpId)   { fb.style.color = 'var(--f1-red)'; fb.textContent = '⚠️ Seleccioná el GP'; return; }
+
+  var race = RACES_2026.find(function(r) { return r.id === gpId; });
+
+  var pred = {
+    id:           Date.now(),
+    timestamp:    new Date().toISOString(),
+    player:       player,
+    gpId:         gpId,
+    pole:         document.getElementById('am-pole').value,
+    winner:       document.getElementById('am-winner').value,
+    p1:           document.getElementById('am-p1').value,
+    p2:           document.getElementById('am-p2').value,
+    p3:           document.getElementById('am-p3').value,
+    fastestLap:   document.getElementById('am-fl').value,
+    dotd:         document.getElementById('am-dotd').value,
+    pitStop:      document.getElementById('am-pit').value,
+    dnf:          document.getElementById('am-dnf').value,
+    sprintPole:   (race && race.sprint) ? document.getElementById('am-sprint-pole').value : '',
+    sprintWinner: (race && race.sprint) ? document.getElementById('am-sprint-winner').value : '',
+  };
+
+  fb.style.color = 'var(--white-muted)';
+  fb.textContent = '⏳ Guardando...';
+
+  try {
+    if (API_URL) {
+      await apiPost({ action: 'savePrediction', data: pred });
+    }
+    // Actualizar estado local
+    appState.predictions = appState.predictions.filter(function(p) {
+      return !(p.player.toLowerCase() === pred.player.toLowerCase() && p.gpId === pred.gpId);
+    });
+    appState.predictions.push(pred);
+    // Calcular puntos si hay resultado cargado
+    if (appState.results[gpId]) {
+      calculatePointsForGP(gpId);
+    }
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✅ Pronóstico de ' + player + ' cargado correctamente';
+    renderAdminPredictions();
+    renderAdminPointsSummary();
+    // Limpiar jugador para facilitar carga del siguiente
+    document.getElementById('am-player').value = '';
+  } catch(err) {
+    fb.style.color = 'var(--f1-red)';
+    fb.textContent = '❌ Error: ' + err.message;
+  }
+}
+
+window.onAdminManualGPChange = onAdminManualGPChange;
+window.submitAdminManualPred = submitAdminManualPred;
+window.initAdminManualForm = initAdminManualForm;
+
 function renderAdminPanel() {
   if (!isAdminLoggedIn) return;
   populateGPSelect('result-gp-select', '');
   renderAdminPredictions();
   renderAdminPointsSummary();
+  initAdminManualForm();
   // Actualizar panel de notificaciones
   var dot = document.getElementById('notif-dot');
   if (dot) {
